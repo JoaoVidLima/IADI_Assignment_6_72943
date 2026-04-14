@@ -2,6 +2,10 @@ package pt.unl.fct.iadi.novaevents.initializer
 
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import pt.unl.fct.iadi.novaevents.model.Club
@@ -16,11 +20,22 @@ import java.time.LocalDate
 class DataInitializer(
     private val eventTypeRepository: EventTypeRepository,
     private val clubRepository: ClubRepository,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val userDetailsManager: UserDetailsManager,
+    private val passwordEncoder: PasswordEncoder
 ) : ApplicationRunner {
 
     @Transactional
     override fun run(args: ApplicationArguments?) {
+
+        if (!userDetailsManager.userExists("alice")) {
+            listOf(
+                User("alice", passwordEncoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_EDITOR"))),
+                User("bob", passwordEncoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_EDITOR"))),
+                User("charlie", passwordEncoder.encode("password123"), listOf(SimpleGrantedAuthority("ROLE_ADMIN"))),
+            ).forEach { userDetailsManager.createUser(it) }
+        }
+
         if (eventTypeRepository.count() > 0) return
 
         // 1. Event types

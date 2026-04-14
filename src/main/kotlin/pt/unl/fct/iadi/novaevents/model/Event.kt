@@ -35,6 +35,10 @@ class Event (
     var eventType: EventType = EventType(),
 
     @Column(name = "description", length = 2000)
-    var description: String? = null
+    var description: String? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = true)
+    var createdBy: AppUser? = null
 )
 
