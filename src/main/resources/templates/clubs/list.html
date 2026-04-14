@@ -1,0 +1,37 @@
+<!DOCTYPE html> <!-- Declares the document as HTML5 -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main(~{::section})}"> <!-- Root element with Thymeleaf namespace and replaces this page with the 'main' fragment from layout, passing the <section> as content -->
+
+<body> <!-- Body of the HTML document -->
+<section> <!-- Section that will be injected into the layout template -->
+    <h1>Campus Clubs</h1> <!-- Main heading of the page -->
+
+    <table class="table table-hover"> <!-- Bootstrap-styled table with hover effect -->
+        <thead class="table-light"> <!-- Table header with light background -->
+        <tr> <!-- Table row for column headers -->
+            <th>Name</th> <!-- Column header for club name -->
+            <th>Category</th> <!-- Column header for club category -->
+            <th>Description</th> <!-- Column header for club description -->
+            <th>Events</th> <!-- Column header for event counter description -->
+        </tr>
+        </thead>
+        <tbody> <!-- Table body where dynamic data will be inserted -->
+        <tr th:each="club : ${clubs}" th:attr="data-club-id=${club.id}">
+            <td>
+                <a th:href="@{/clubs/{id}(id=${club.id})}" th:text="${club.name}">Club Name</a>
+            </td>
+            <td>
+                <span class="badge rounded-pill bg-primary text-white" th:text="${club.category.name}">Category</span>
+            </td>
+            <td>
+                <details>
+                    <summary>View Description</summary>
+                    <p class="mt-2" th:text="${club.description}">Description text...</p>
+                </details>
+            </td>
+            <td th:text="${eventCounter[club.id] ?: 0}">0</td>
+        </tr>
+        </tbody>
+    </table>
+</section> <!-- End of section that gets injected into layout -->
+</body> <!-- End of body -->
+</html> <!-- End of HTML document -->

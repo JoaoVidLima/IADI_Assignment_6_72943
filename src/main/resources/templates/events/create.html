@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main(~{::section})}">
+<body>
+<section>
+    <h1>Creating event for club:</h1>
+    <h4 th:text="${club.name}">Club Name</h4>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            <span class="fw-medium">Create Event</span>
+        </div>
+
+        <div class="card-body">
+            <form class="row g-3 align-items-end"
+                  th:action="@{/clubs/{clubId}/events(clubId=${club.id})}"
+                  th:object="${request}"
+                  method="post">
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Name <span class="text-danger">*</span></label>
+                    <input type="text" th:field="*{name}" class="form-control"/>
+                    <div th:if="${#fields.hasErrors('name')}"><small th:errors="*{name}"></small></div>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Date <span class="text-danger">*</span></label>
+                    <input type="date" th:field="*{date}" class="form-control"/>
+                    <div th:if="${#fields.hasErrors('date')}"><small th:errors="*{date}"></small></div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Location</label>
+                    <input type="text" class="form-control" th:field="*{location}" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Event Type <span class="text-danger">*</span></label>
+                    <select class="form-select" th:field="*{type}">
+                        <option value="">Choose type...</option>
+                        <option th:each="type : ${eventTypes}"
+                                th:value="${type.name}"
+                                th:text="${type.name}">Type</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('type')}"><small th:errors="*{type}"></small></div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Description</label>
+                    <input type="text" class="form-control" th:field="*{description}" />
+                </div>
+
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a th:href="@{/clubs/{clubId}/events/new(clubId=${club.id})}"
+                           class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

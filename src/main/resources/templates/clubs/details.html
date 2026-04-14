@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main(~{::section})}">
+
+<body>
+    <section>
+        <h1 th:text="${club.name}">Club Name</h1>
+        <h4> <span class="badge rounded-pill bg-primary text-white" th:text="${club.category.name}">Club Category </span></h4>
+        <div>
+            <label class="form-label small fw-bold">Description</label>
+            <p th:text="${club.description}">Club Description</p>
+        </div>
+
+        <a class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" th:href="@{/events(clubId=${club.id})}">View Events</a>
+        <a class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm" th:href="@{/clubs/{clubId}/events/new(clubId=${club.id})}">+ Add Event</a>
+    </section>
+</body>
+</html>

@@ -1,0 +1,15 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123      # root user password — keep it strong, you won't use this directly
+      MYSQL_DATABASE: novaevents            # creates this database automatically on first start
+      MYSQL_USER: novaevents_user           # dedicated app user — never connect as root
+      MYSQL_PASSWORD: novaevents_pass       # password for the app user
+    ports:
+      - "3306:3306"                         # host:container — lets your Spring app reach MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql           # persists data between container restarts
+
+volumes:
+  mysql_data:

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main(~{::section})}">
+<body>
+<section>
+    <h1>All Events</h1>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            <span class="fw-medium">Filter Events</span>
+        </div>
+
+        <div class="card-body">
+            <form class="row g-3 align-items-end" th:action="@{/events}" th:object="${filter}" method="get">
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Event Type</label>
+                    <select class="form-select" th:field="*{type}">
+                        <option value="">All types</option>
+                        <option th:each="type : ${eventTypes}"
+                                th:value="${type.name}"
+                                th:text="${type.name}">Type</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Club</label>
+                    <select class="form-select" th:field="*{clubId}">
+                        <option value="">All clubs</option>
+                        <option th:each="club : ${allClubs}"
+                                th:value="${club.id}"
+                                th:text="${club.name}">Club Name</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">From Date</label>
+                    <input type="date" class="form-control" th:field="*{from}" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">To Date</label>
+                    <input type="date" class="form-control" th:field="*{to}" />
+                </div>
+
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a th:href="@{/events}" class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead class="table-light">
+        <tr>
+            <th>Name</th>
+            <th>Club</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td>
+                <a th:href="@{/clubs/{clubId}/events/{eventId}(clubId=${event.club.id}, eventId=${event.id})}"
+                   th:text="${event.name}">Event Name</a>
+            </td>
+            <td>
+                <a th:href="@{/clubs/{id}(id=${event.club.id})}"
+                   th:text="${event.club.name}">Club Name</a>
+            </td>
+            <td>
+                <span th:text="${event.date}">Event Date</span>
+            </td>
+            <td>
+                <span class="badge rounded-pill bg-primary text-white"
+                      th:text="${event.eventType.name}">Event Type</span>
+            </td>
+            <td>
+                <span th:text="${event.location}">Event Location</span>
+            </td>
+            <td>
+                <a th:href="@{/clubs/{cId}/events/{eId}/edit(cId=${event.club.id}, eId=${event.id})}"
+                   class="btn btn-outline-primary btn-sm">Edit</a>
+                <a th:href="@{/clubs/{cId}/events/{eId}/delete(cId=${event.club.id}, eId=${event.id})}"
+                   class="btn btn-outline-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>

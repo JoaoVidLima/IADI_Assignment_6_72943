@@ -1,0 +1,37 @@
+<!DOCTYPE html> <!-- Declares the document type and version of HTML (HTML5) -->
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="main(content)"> <!-- Root HTML element with Thymeleaf namespace and fragment definition -->
+
+    <head> <!-- Contains metadata and resources for the page -->
+        <meta charset="UTF-8"> <!-- Sets character encoding to UTF-8 for proper text display -->
+        <title>Nova Events</title> <!-- Title of the webpage shown in the browser tab -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Links Bootstrap CSS for styling -->
+    </head>
+
+    <body class="d-flex flex-column min-vh-100"> <!-- Main content of the webpage -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4"> <!-- Navigation bar with Bootstrap styling -->
+            <div class="container"> <!-- Centers and constrains content width -->
+                <a class="navbar-brand" th:href="@{/clubs}">Nova Events</a> <!-- Brand/logo link that redirects to /clubs using Thymeleaf -->
+                <div class="navbar-nav"> <!-- Container for navigation links -->
+                    <a class="nav-link" th:href="@{/clubs}">Clubs</a> <!-- Link to the Clubs page -->
+                    <a class="nav-link" th:href="@{/events}">Events</a> <!-- Link to the Events page -->
+                </div>
+            </div>
+        </nav>
+
+        <div class="container"> <!-- Main content container for page content -->
+            <div th:replace="${content}"></div> <!-- Thymeleaf replaces this div with dynamic content passed as 'content' -->
+        </div>
+
+        <footer class="bg-dark text-white py-4 mt-auto">
+            <div class="container d-flex justify-content-between align-items-center">
+                <p class="text-muted mb-0">&copy; 2026 Nova Events - Campus Management</p>
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">João Lima</li>
+                    <li class="list-inline-item">| DIAI</li>
+                </ul>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <!-- Includes Bootstrap JavaScript bundle for interactive components -->
+    </body>
+</html>
