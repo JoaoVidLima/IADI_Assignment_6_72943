@@ -7,7 +7,7 @@ import pt.unl.fct.iadi.novaevents.interceptor.RequestLoggingInterceptor
 
 @Configuration
 class WebMvcConfig(
-    private val requestLoggingInterceptor: RequestLoggingInterceptor
+    private val requestLoggingInterceptor: RequestLoggingInterceptor // This might be the loop
 ) : WebMvcConfigurer {
 
     override fun addInterceptors(registry: InterceptorRegistry) {

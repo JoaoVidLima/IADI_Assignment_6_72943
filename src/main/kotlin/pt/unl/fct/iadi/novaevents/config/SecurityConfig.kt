@@ -1,4 +1,4 @@
-package pt.unl.fct.iadi.novaevents.security
+package pt.unl.fct.iadi.novaevents.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,6 +15,8 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 import org.springframework.security.web.savedrequest.CookieRequestCache
+import pt.unl.fct.iadi.novaevents.security.JwtAuthSuccessHandler
+import pt.unl.fct.iadi.novaevents.security.JwtCookieAuthFilter
 
 @Configuration
 @EnableWebSecurity
@@ -53,31 +55,32 @@ class SecurityConfig(
             // URL-level authorization rules
             .authorizeHttpRequests { auth ->
                 auth
+                    // 1. Static Resources (Always permit)
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/error").permitAll()
 
-                    // Add /error and /favicon.ico here!
-                    .requestMatchers(HttpMethod.GET, "/login", "/logout", "/", "/error", "/favicon.ico").permitAll()
+                    // 2. Authentication Pages
+                    .requestMatchers("/login", "/logout").permitAll()
 
-                    // Static resources (Bootstrap, etc) if you have them in /static
-                    .requestMatchers("/css/**", "/js/**").permitAll()
+                    // 3. STRICTEST RULES FIRST: Event Deletion
+                    // We allow EDITOR or ADMIN here at the URL level because
+                    // the Controller's @PreAuthorize will handle the "Owner OR Admin" logic.
+                    .requestMatchers("/clubs/*/events/*/delete").hasAnyRole("EDITOR", "ADMIN")
 
-                    .requestMatchers(HttpMethod.GET, "/clubs/**").permitAll()
-
-                    // Public: all reads
-                    .requestMatchers(HttpMethod.GET, "/login", "/logout").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/clubs/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/").permitAll()
-
-                    // EDITOR or ADMIN: create and edit events
-                    .requestMatchers(HttpMethod.GET, "/clubs/*/events/new").hasAnyRole("EDITOR", "ADMIN")
+                    // 4. EDITOR/ADMIN: Creating and Editing
+                    // URL bouncer ensures guests can't even see the forms.
+                    .requestMatchers("/clubs/*/events/new").hasAnyRole("EDITOR", "ADMIN")
                     .requestMatchers(HttpMethod.POST, "/clubs/*/events").hasAnyRole("EDITOR", "ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/clubs/*/events/*/edit").hasAnyRole("EDITOR", "ADMIN")
+                    .requestMatchers("/clubs/*/events/*/edit").hasAnyRole("EDITOR", "ADMIN")
                     .requestMatchers(HttpMethod.POST, "/clubs/*/events/*/edit").hasAnyRole("EDITOR", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/clubs/*/events/*").hasAnyRole("EDITOR", "ADMIN")
 
-                    // ADMIN only: delete
-                    .requestMatchers(HttpMethod.GET, "/clubs/*/events/*/delete").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/clubs/*/events/*/delete").hasRole("ADMIN")
+                    // 5. PUBLIC: Read Operations
+                    // We place these AFTER the write rules so that /delete or /edit
+                    // aren't accidentally caught by the general /clubs/** permitAll.
+                    .requestMatchers(HttpMethod.GET, "/", "/clubs", "/clubs/*", "/events").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/clubs/*/events/*").permitAll()
 
-                    // Everything else: just be logged in
+                    // 6. CATCH-ALL
                     .anyRequest().authenticated()
             }
             // Form login — custom page, custom success handler
