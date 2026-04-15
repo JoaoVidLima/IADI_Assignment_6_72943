@@ -30,7 +30,8 @@
             <div class="navbar-nav ms-auto">
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
                     <span class="navbar-text text-white me-3">
-                        Welcome, <strong sec:authentication="name">User</strong>
+                        Welcome,
+                        <strong id="navbar-username" sec:authentication="name">User</strong>
                     </span>
                     <form th:action="@{/logout}" method="post" class="m-0">
                         <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
