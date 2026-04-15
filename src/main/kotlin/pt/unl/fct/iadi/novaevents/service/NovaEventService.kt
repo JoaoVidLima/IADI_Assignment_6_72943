@@ -40,7 +40,7 @@ class NovaEventService(
     @Transactional
     fun getClubWithEvents(clubId: Long): Pair<Club, List<Event>> {
         val club = getClubById(clubId)
-        val events = club.events?.toList() ?: emptyList()
+        val events = eventRepository.findByClubIdWithDetails(clubId)
         return club to events
     }
 

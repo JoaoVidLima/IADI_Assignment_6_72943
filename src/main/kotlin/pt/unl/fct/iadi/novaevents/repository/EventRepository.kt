@@ -38,9 +38,7 @@ interface EventRepository : JpaRepository<Event, Long> {
     // Check for duplicates but exclude the current ID (used for Updates)
     fun existsByNameIgnoreCaseAndIdNot(name: String, id: Long): Boolean
 
-    // Filter by Club ID (Spring knows 'club' has an 'id')
-    fun findByClubId(clubId: Long): List<Event>
+    @Query("SELECT e FROM Event e JOIN FETCH e.eventType JOIN FETCH e.club WHERE e.club.id = :clubId")
+    fun findByClubIdWithDetails(@Param("clubId") clubId: Long): List<Event>
 
-    // Filter by Type ID
-    fun findByEventTypeId(typeId: Long): List<Event>
 }
