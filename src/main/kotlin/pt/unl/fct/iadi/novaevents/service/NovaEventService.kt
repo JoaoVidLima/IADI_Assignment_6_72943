@@ -45,8 +45,12 @@ class NovaEventService(
     }
 
     fun findEvents(filter: EventFilter): List<Event> {
-        val typeId: Long? = filter.type?.let { eventTypeRepository.findByName(it) }?.id
-        return eventRepository.findFilteredEvents(filter.clubId, typeId, filter.from, filter.to)
+        return eventRepository.findFilteredEvents(
+            filter.clubId,
+            filter.type,
+            filter.from,
+            filter.to
+        )
     }
 
     fun getEventById(id: Long): Event {

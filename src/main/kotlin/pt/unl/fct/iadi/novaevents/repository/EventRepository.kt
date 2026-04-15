@@ -20,14 +20,15 @@ interface EventRepository : JpaRepository<Event, Long> {
     SELECT e FROM Event e
     JOIN FETCH e.club
     JOIN FETCH e.eventType
+    LEFT JOIN FETCH e.createdBy
     WHERE (:clubId IS NULL OR e.club.id = :clubId)
-    AND (:typeId IS NULL OR e.eventType.id = :typeId)
+    AND (:typeName IS NULL OR e.eventType.name = :typeName)
     AND (:from IS NULL OR e.date >= :from)
     AND (:to IS NULL OR e.date <= :to)
     """)
     fun findFilteredEvents(
         @Param("clubId") clubId: Long?,
-        @Param("typeId") typeId: Long?,
+        @Param("typeName") typeName: String?, // Filter by name directly!
         @Param("from") from: LocalDate?,
         @Param("to") to: LocalDate?
     ): List<Event>
@@ -38,7 +39,13 @@ interface EventRepository : JpaRepository<Event, Long> {
     // Check for duplicates but exclude the current ID (used for Updates)
     fun existsByNameIgnoreCaseAndIdNot(name: String, id: Long): Boolean
 
-    @Query("SELECT e FROM Event e JOIN FETCH e.eventType JOIN FETCH e.club WHERE e.club.id = :clubId")
+    @Query("""
+        SELECT e FROM Event e 
+        JOIN FETCH e.eventType 
+        JOIN FETCH e.club 
+        LEFT JOIN FETCH e.createdBy 
+        WHERE e.club.id = :clubId
+    """)
     fun findByClubIdWithDetails(@Param("clubId") clubId: Long): List<Event>
 
 }
