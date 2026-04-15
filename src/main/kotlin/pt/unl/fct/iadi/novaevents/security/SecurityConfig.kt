@@ -53,6 +53,15 @@ class SecurityConfig(
             // URL-level authorization rules
             .authorizeHttpRequests { auth ->
                 auth
+
+                    // Add /error and /favicon.ico here!
+                    .requestMatchers(HttpMethod.GET, "/login", "/logout", "/", "/error", "/favicon.ico").permitAll()
+
+                    // Static resources (Bootstrap, etc) if you have them in /static
+                    .requestMatchers("/css/**", "/js/**").permitAll()
+
+                    .requestMatchers(HttpMethod.GET, "/clubs/**").permitAll()
+
                     // Public: all reads
                     .requestMatchers(HttpMethod.GET, "/login", "/logout").permitAll()
                     .requestMatchers(HttpMethod.GET, "/clubs/**").permitAll()
@@ -80,7 +89,7 @@ class SecurityConfig(
             .logout { logout ->
                 logout.logoutUrl("/logout")
                 logout.deleteCookies("jwt")
-                logout.logoutSuccessUrl("/")
+                logout.logoutSuccessUrl("/clubs")
             }
 
         return http.build()

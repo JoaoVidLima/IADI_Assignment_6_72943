@@ -133,7 +133,6 @@ class DataInitializer(
             Event(club = film, name = "Screenwriting Workshop",
                 date = LocalDate.of(2026, 4, 14), location = "Room D305",
                 eventType = workshop, description = "From idea to script in one afternoon.")
-
         ))
     }
 }

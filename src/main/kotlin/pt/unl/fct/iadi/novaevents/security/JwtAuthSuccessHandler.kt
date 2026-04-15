@@ -37,7 +37,8 @@ class JwtAuthSuccessHandler(
         // Redirect to the page the user was trying to reach before being sent to /login,
         // or fall back to homepage if they went to /login directly.
         val savedRequest = requestCache.getRequest(request, response)
-        val redirectUrl = savedRequest?.redirectUrl ?: (request.contextPath + "/")
+        val redirectUrl = savedRequest?.redirectUrl ?: (request.contextPath + "/clubs")
+
         requestCache.removeRequest(request, response)
         response.sendRedirect(redirectUrl)
     }

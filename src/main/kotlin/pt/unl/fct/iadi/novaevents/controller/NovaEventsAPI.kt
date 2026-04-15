@@ -1,5 +1,6 @@
 package pt.unl.fct.iadi.novaevents.controller
 
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -9,11 +10,16 @@ import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.servlet.ModelAndView
 import pt.unl.fct.iadi.novaevents.controller.dto.CreateEventRequest
 import pt.unl.fct.iadi.novaevents.controller.dto.EditEventRequest
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFilter
+import java.security.Principal
 
 interface NovaEventsAPI {
+
+    @GetMapping("/login")
+    fun login():String
 
     // STORY 1: List all clubs
     @GetMapping("/clubs")
@@ -45,7 +51,7 @@ interface NovaEventsAPI {
 
     @PostMapping("/clubs/{clubId}/events")
     fun createEvent(@PathVariable clubId: Long, @Valid @ModelAttribute("request") request: CreateEventRequest,
-                    bindingResult: BindingResult, model: Model): String //BindingResult must go exactly after request
+                    bindingResult: BindingResult, model: Model, principal: Principal): String //BindingResult must go exactly after request
 
     //------------------------------------------------------------------------------------------------------------------
 

@@ -1,17 +1,10 @@
 package pt.unl.fct.iadi.novaevents.model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
-class Event (
+class Event(
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -37,8 +30,8 @@ class Event (
     @Column(name = "description", length = 2000)
     var description: String? = null,
 
+    // Nullable — seeded events have no owner
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = true)
     var createdBy: AppUser? = null
 )
-

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: main(~{::section})}">
+<body>
+<section>
+    <div class="py-5 text-center">
+        <h1 class="display-1 fw-bold text-danger" th:text="${status}">404</h1>
+        <h2 class="mb-4" th:text="${error}">Page Not Found</h2>
+
+        <p class="lead mb-5">
+            <span th:if="${status == 403}">
+                Sorry, you don't have permission to access this page.
+                Are you logged in with the right account?
+            </span>
+            <span th:if="${status == 404}">
+                The page you are looking for doesn't exist or has been moved.
+            </span>
+            <span th:if="${status == 500}">
+                Oops! Something went wrong on our end. We're looking into it.
+            </span>
+        </p>
+
+        <a th:href="@{/clubs}" class="btn btn-primary px-5">Back to Clubs</a>
+    </div>
+</section>
+</body>
+</html>

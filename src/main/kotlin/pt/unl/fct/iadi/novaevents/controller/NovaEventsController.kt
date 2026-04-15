@@ -1,5 +1,8 @@
 package pt.unl.fct.iadi.novaevents.controller
 
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.ResponseCookie
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -11,17 +14,21 @@ import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
 import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
+import pt.unl.fct.iadi.novaevents.security.AppUserDetailsManager
 import pt.unl.fct.iadi.novaevents.service.NovaEventService
+import java.security.Principal
 import java.time.LocalDate
 
 @Controller
 class NovaEventsController(
     private var service: NovaEventService,
-    private val eventTypeRepository: EventTypeRepository //This shouldn't be used here. In good design this should be
-                                                        // hidden in service. Only here for fast fixes...
-    //Also, I shouldn't be returning the model object in the model. Should be using a DTO as well for that. Just for fast
-    //prototyping...
+    private val eventTypeRepository: EventTypeRepository,
+    private val userDetailsManager: AppUserDetailsManager
 ) : NovaEventsAPI {
+
+    override fun login(): String {
+        return "login" // Returns login.html template
+    }
 
     override fun listClubs(model: Model): String {
         val counts = service.getAllClubsWithEventCount()
@@ -65,7 +72,8 @@ class NovaEventsController(
 
     override fun createEvent(
         clubId: Long, request: CreateEventRequest,
-        bindingResult: BindingResult, model: Model
+        bindingResult: BindingResult, model: Model,
+        principal: Principal  // injected by Spring — the logged-in user
     ): String {
         if (bindingResult.hasErrors()) {
             return reRenderCreateEvent(clubId, model)
@@ -75,9 +83,11 @@ class NovaEventsController(
             val eventType: EventType = eventTypeRepository.findByName(request.type!!)
                 ?: throw IllegalArgumentException("Invalid event type: ${request.type}")
 
+            val owner = userDetailsManager.findDomainUser(principal.name)
+
             val eventCreated: Event = service.createEvent(
                 clubId, request.name, request.date!!, request.location, eventType,
-                request.description
+                request.description, owner
             )
             return "redirect:/clubs/$clubId/events/${eventCreated.id}"
 
@@ -94,6 +104,8 @@ class NovaEventsController(
         return "events/create"
     }
 
+    // Only the owner can see/use the edit form
+    @PreAuthorize("@eventSecurity.isOwner(#eventId, authentication)")
     override fun showEditEventForm(clubId: Long, eventId: Long, model: Model): String {
         val club: Club = service.getClubById(clubId)
         val event: Event = service.getEventById(eventId)
@@ -111,6 +123,8 @@ class NovaEventsController(
         return "events/edit"
     }
 
+    // Only the owner can submit the edit
+    @PreAuthorize("@eventSecurity.isOwner(#eventId, authentication)")
     override fun editEventDetails(
         clubId: Long, eventId: Long, request: EditEventRequest,
         bindingResult: BindingResult, model: Model
@@ -144,12 +158,16 @@ class NovaEventsController(
         return "events/edit"
     }
 
+    // Owner or admin can see the delete confirmation
+    @PreAuthorize("@eventSecurity.isOwnerOrAdmin(#eventId, authentication)")
     override fun deleteEventConfirmation(clubId: Long, eventId: Long, model: Model): String {
         val event: Event = service.getEventById(eventId)
         model.addAttribute("event", event)
         return "events/delete"
     }
 
+    // Owner or admin can actually delete
+    @PreAuthorize("@eventSecurity.isOwnerOrAdmin(#eventId, authentication)")
     override fun deleteEvent(clubId: Long, eventId: Long): String {
         service.deleteEvent(eventId)
         return "redirect:/clubs/$clubId"
